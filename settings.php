@@ -20,14 +20,13 @@
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author    Andreas Windbichler
+ * @author    Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
-
 
 if ($ADMIN->fulltree) {
     require_once($CFG->dirroot . '/mod/organizer/locallib.php');
@@ -124,15 +123,37 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtextarea('mod_organizer/locations', get_string('configlocationslist', 'organizer'),
             get_string('configlocationslist_desc', 'organizer'), '', PARAM_TEXT, '60', '8'));
 
-    // User profile fields for printing single slots.
-    $settings->add(new admin_setting_heading('organizersingleslotprintfields', '',
-        get_string('singleslotprintfields', 'organizer')));
 
-    $profilefields = organizer_printslotuserfields();
+    // User profile fields for printing single slots.
+
+    $selectableprofilefields = organizer_printslotuserfields();
+
+    // Allowed User profile fields for printing single slots.
+    $settings->add(new admin_setting_heading('allowedprofilefieldsprint', '',
+        get_string('allowedprofilefieldsprint', 'organizer')));
+
+    $settings->add(
+        new admin_setting_configcheckbox('organizer/enableprintslotuserfields',
+            get_string('enableprintslotuserfields', 'organizer'),
+            get_string('enableprintslotuserfieldsdesc', 'organizer'), 1));
+    $settings->add(
+        new admin_setting_configmultiselect('organizer/allowedprofilefieldsprint',
+           get_string('allowedprofilefieldsprint', 'organizer'),
+            get_string('allowedprofilefieldsprint2', 'organizer'),
+            array_keys($selectableprofilefields), $selectableprofilefields));
+
+
+    $settings->add(new admin_setting_heading('organizersingleslotprintfields', '',
+        get_string('defaultsingleslotprintfields', 'organizer')));
+
+
+    $selectableprofilefields = ['' => '--'] + $selectableprofilefields;
 
     for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
         $settings->add(
-                new admin_setting_configselect('organizer/singleslotprintfield' . $i,
-                        $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'), null, '', $profilefields));
+            new admin_setting_configselect('organizer/singleslotprintfield' . $i,
+                $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'),
+                null, '', $selectableprofilefields));
     }
+
 }

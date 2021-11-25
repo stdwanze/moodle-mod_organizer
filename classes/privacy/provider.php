@@ -48,7 +48,7 @@ use core_privacy\local\request\approved_userlist;
  * @copyright  2018 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements metadataprovider, pluginprovider, preference_provider, core_userlist_provider
+class provider implements metadataprovider, pluginprovider, core_userlist_provider
 {
     /**
      * Provides meta data that is stored about a user with mod_organizer
@@ -56,8 +56,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
      * @param  collection $collection A collection of meta data items to be added to.
      * @return  collection Returns the collection of metadata.
      */
-    public static function get_metadata(collection $collection): collection
-    {
+    public static function get_metadata(collection $collection): collection {
         $organizerslotappointments = [
             'userid' => 'privacy:metadata:useridappointment',
             'groupid' => 'privacy:metadata:groupidappointment',
@@ -85,15 +84,6 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
         $collection->add_database_table('organizer_slot_trainer', $organizerslottrainer,
             'privacy:metadata:organizerslottrainer');
 
-        $collection->add_user_preference('mod_organizer_showhiddenslots',
-            'privacy:metadata:showhiddenslots');
-        $collection->add_user_preference('mod_organizer_showmyslotsonly',
-            'privacy:metadata:showmyslotsonly');
-        $collection->add_user_preference('mod_organizer_showfreeslotsonly',
-            'privacy:metadata:showfreeslotsonly');
-        $collection->add_user_preference('mod_organizer_showpasttimeslots',
-            'privacy:metadata:showpasttimeslots');
-
         return $collection;
     }
 
@@ -103,8 +93,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
      * @param  int $userid The user ID.
      * @return contextlist an object with the contexts related to a userid.
      */
-    public static function get_contexts_for_userid(int $userid): contextlist
-    {
+    public static function get_contexts_for_userid(int $userid): contextlist {
 
         $params = [
             'modulename' => 'organizer',
@@ -145,8 +134,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
      *
      * @param   userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
      */
-    public static function get_users_in_context(userlist $userlist)
-    {
+    public static function get_users_in_context(userlist $userlist) {
         $context = $userlist->get_context();
 
         if ($context->contextlevel != CONTEXT_MODULE) {
@@ -183,8 +171,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
      * @throws \dml_exception
      * @throws \coding_exception
      */
-    public static function export_user_data(approved_contextlist $contextlist)
-    {
+    public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
 
         $contexts = $contextlist->get_contexts();
@@ -230,29 +217,8 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
      * @throws \dml_exception
      * @throws \coding_exception
      */
-    public static function export_user_preferences(int $userid)
-    {
+    public static function export_user_preferences(int $userid) {
         $context = \context_system::instance();
-        $value = get_user_preferences('mod_organizer_showhiddenslots', null, $userid);
-        if ($value !== null) {
-            writer::with_context($context)->export_user_preference('mod_organizer', 'mod_organizer_showhiddenslots', $value,
-                get_string('privacy:metadata:showhiddenslots', 'mod_organizer'));
-        }
-        $value = get_user_preferences('mod_organizer_showmyslotsonly', null, $userid);
-        if ($value !== null) {
-            writer::with_context($context)->export_user_preference('mod_organizer', 'mod_organizer_showmyslotsonly', $value,
-                get_string('privacy:metadata:showmyslotsonly', 'mod_organizer'));
-        }
-        $value = get_user_preferences('mod_organizer_showfreeslotsonly', null, $userid);
-        if ($value !== null) {
-            writer::with_context($context)->export_user_preference('mod_organizer', 'mod_organizer_showfreeslotsonly', $value,
-                get_string('privacy:metadata:showfreeslotsonly', 'mod_organizer'));
-        }
-        $value = get_user_preferences('mod_organizer_showpasttimeslots', null, $userid);
-        if ($value !== null) {
-            writer::with_context($context)->export_user_preference('mod_organizer', 'mod_organizer_showpasttimeslots', $value,
-                get_string('privacy:metadata:showpasttimeslots', 'mod_organizer'));
-        }
     }
 
     /**
@@ -264,8 +230,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
      * @param  array $path Current directory path that we are exporting to.
      * @throws \dml_exception
      */
-    protected static function export_appointments(\context $context, $organizer, \stdClass $user)
-    {
+    protected static function export_appointments(\context $context, $organizer, \stdClass $user) {
         global $DB;
 
         // Fetch all appointments of participants or trainers.
@@ -366,8 +331,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
      * @param  \context $context
      * @param  \stdClass $appointment
      */
-    protected static function export_appointment_participant(\context $context, \stdClass $appointment)
-    {
+    protected static function export_appointment_participant(\context $context, \stdClass $appointment) {
         $appointment->groupid = is_null($appointment->groupid) ? 0 : $appointment->groupid;
         $appointment->teacherapplicantid = is_null($appointment->teacherapplicantid) ? 0 : $appointment->teacherapplicantid;
         $appointmentdata = (object)[
@@ -394,8 +358,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
      * @param  \context $context
      * @param  \stdClass $inqueue
      */
-    protected static function export_appointment_inqueue(\context $context, \stdClass $inqueue)
-    {
+    protected static function export_appointment_inqueue(\context $context, \stdClass $inqueue) {
         $inqueue->groupid = is_null($inqueue->groupid) ? 0 : $inqueue->groupid;
         $inqueue->teacherapplicantid = is_null($inqueue->teacherapplicantid) ? 0 : $inqueue->teacherapplicantid;
         $inqueuedata = (object)[
@@ -415,8 +378,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
      * @param  \context $context
      * @param  \stdClass $appointment
      */
-    protected static function export_appointment_teacherapplicant(\context $context, \stdClass $appointment)
-    {
+    protected static function export_appointment_teacherapplicant(\context $context, \stdClass $appointment) {
         $appointmentdata = (object)[
             'Appointment slot from' => transform::datetime($appointment->starttime),
             'Appointment slot to' => transform::datetime($appointment->starttime + $appointment->duration),
@@ -435,8 +397,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
      * @param  \context $context
      * @param  \stdClass $appointment
      */
-    protected static function export_appointment_teacher(\context $context, \stdClass $appointment)
-    {
+    protected static function export_appointment_teacher(\context $context, \stdClass $appointment) {
         $appointmentdata = (object)[
             'Appointment slot from' => transform::datetime($appointment->starttime),
             'Appointment slot to' => transform::datetime($appointment->starttime + $appointment->duration),
@@ -453,8 +414,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
      * @param \context $context The module context.
      * @throws \dml_exception
      */
-    public static function delete_data_for_all_users_in_context(\context $context)
-    {
+    public static function delete_data_for_all_users_in_context(\context $context) {
         global $DB;
 
         if ($context->contextlevel == CONTEXT_MODULE) {
@@ -486,8 +446,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
      * @throws \dml_exception
      * @throws \coding_exception
      */
-    public static function delete_data_for_user(approved_contextlist $contextlist)
-    {
+    public static function delete_data_for_user(approved_contextlist $contextlist) {
         global $DB;
 
         $user = $contextlist->get_user();
@@ -522,7 +481,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
 
             $organizerids[] = $records[$context->id]->id;
         }
-       if (empty($organizerids)) {
+        if (empty($organizerids)) {
             return;
         }
 
@@ -546,8 +505,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
      *
      * @param   approved_userlist $userlist The approved context and user information to delete information for.
      */
-    public static function delete_data_for_users(approved_userlist $userlist)
-    {
+    public static function delete_data_for_users(approved_userlist $userlist) {
         global $DB;
 
         $context = $userlist->get_context();

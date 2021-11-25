@@ -32,16 +32,25 @@ require_once(dirname(__FILE__) . '/lib.php');
 
 class organizer_assign_slot_form extends moodleform
 {
-
+    /**
+     * {@inheritDoc}
+     * @see moodleform::definition()
+     */
     protected function definition() {
         $this->_sethiddenfields();
     }
 
+    /**
+     * {@inheritDoc}
+     * @see moodleform::definition_after_data()
+     */
     public function definition_after_data() {
         $this->_addslotlist();
         $this->add_action_buttons(false, get_string('assign', 'organizer'));
     }
-
+    /**
+     * Set the hidden fields in the function
+     */
     private function _sethiddenfields() {
         $mform = $this->_form;
         $data = $this->_customdata;
@@ -51,7 +60,7 @@ class organizer_assign_slot_form extends moodleform
         $mform->addElement('hidden', 'mode', $data['mode']);
         $mform->setType('mode', PARAM_INT);
         $mform->addElement('hidden', 'action', 'assign');
-        $mform->setType('action', PARAM_ACTION);
+        $mform->setType('action', PARAM_ALPHANUMEXT);
         $mform->addElement('hidden', 'participant', $data['participant']);
         $mform->setType('participant', PARAM_INT);
         $mform->addElement('hidden', 'group', $data['group']);
@@ -60,6 +69,9 @@ class organizer_assign_slot_form extends moodleform
         $mform->setType('organizerid', PARAM_INT);
     }
 
+    /**
+     * adds slots to the form
+     */
     private function _addslotlist() {
         global $DB;
 
@@ -120,7 +132,12 @@ class organizer_assign_slot_form extends moodleform
         $mform->addElement('html', '</table>');
 
     }
-
+    /**
+     * looks if the slot is free for the user
+     * @param mixed $slot
+     * @param int $userid
+     * @return boolean
+     */
     private function _organizer_slot_is_free($slot, $userid) {
 
         $slotx = new organizer_slot($slot);
@@ -137,7 +154,9 @@ class organizer_assign_slot_form extends moodleform
 
         return false;
     }
-
+    /**
+     * Adds Buttons to the form
+     */
     private function _addbuttons() {
         $mform = $this->_form;
 

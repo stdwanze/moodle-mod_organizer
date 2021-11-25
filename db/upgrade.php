@@ -625,12 +625,12 @@ function xmldb_organizer_upgrade($oldversion) {
         $now = time();
 
         $params = array('now' => $now);
-        $query = "SELECT s.id, cm.id as cmid, o.nocalendareventslotcreation 
-                  FROM {organizer_slots} s 
-                  INNER JOIN {organizer} o ON s.organizerid = o.id 
+        $query = "SELECT s.id, cm.id as cmid, o.nocalendareventslotcreation
+                  FROM {organizer_slots} s
+                  INNER JOIN {organizer} o ON s.organizerid = o.id
                   INNER JOIN {course_modules} cm ON o.id = cm.instance
                   INNER JOIN {modules} m ON cm.module = m.id
-                  WHERE m.name = 'organizer' 
+                  WHERE m.name = 'organizer'
                   AND s.starttime > :now";
 
         $slots = $DB->get_records_sql($query, $params);
@@ -661,6 +661,7 @@ function xmldb_organizer_upgrade($oldversion) {
         }
 
         upgrade_mod_savepoint(true, 2018081003, 'organizer');
+
     }
 
     if ($oldversion < 2019052700) {
@@ -676,6 +677,39 @@ function xmldb_organizer_upgrade($oldversion) {
         }
 
         upgrade_mod_savepoint(true, 2019052700, 'organizer');
+    }
+
+    if ($oldversion < 2020020501) {
+
+        $table = new xmldb_table('organizer');
+        $field = new xmldb_field('allowedprofilefieldsprint', XMLDB_TYPE_TEXT, null,
+            null, null, null, null, 'singleslotprintfield9');
+        // Conditionally launch add field allowedprofilefieldsprint. Github-issue #43.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('enableprintslotuserfields', XMLDB_TYPE_INTEGER, '4', null,
+            null, null, null, 'allowedprofilefieldsprint');
+        // Conditionally launch add field enableprintslotuserfields. Github-issue #43.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2020020501, 'organizer');
+    }
+    if ($oldversion < 2020020502) {
+        $sql = 'UPDATE {event} SET type=:type WHERE modulename=:modulename AND eventtype=:eventtype AND type=:oldtype';
+        $params = [
+            'type' => CALENDAR_EVENT_TYPE_ACTION,
+            'modulename' => 'organizer',
+            'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
+            'oldtype' => CALENDAR_EVENT_TYPE_STANDARD
+        ];
+        $DB->execute($sql, $params);
+        $params['eventtype'] = ORGANIZER_CALENDAR_EVENTTYPE_SLOT;
+        $DB->execute($sql, $params);
+        upgrade_mod_savepoint(true, 2020020502, 'organizer');
     }
 
     return true;

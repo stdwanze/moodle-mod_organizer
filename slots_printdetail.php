@@ -38,7 +38,7 @@ list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 require_login($course, false, $cm);
 
 $mode = optional_param('mode', null, PARAM_INT);
-$action = optional_param('action', null, PARAM_ACTION);
+$action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $user = optional_param('user', null, PARAM_INT);
 $slot = optional_param('slot', null, PARAM_INT);
 $app = optional_param('app', null, PARAM_INT);
@@ -57,6 +57,8 @@ $PAGE->set_heading($course->fullname);
 $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
 
 
+require_capability('mod/organizer:printslots', $context);
+
 if (!$slot) {
     $redirecturl->param('messages[]', 'message_warning_no_visible_slots_selected');
     redirect($redirecturl);
@@ -64,7 +66,7 @@ if (!$slot) {
     $_SESSION['organizer_slot'] = $slot;
 }
 
-$mform = new organizer_print_slotdetail_form(null, array('id' => $cm->id, 'mode' => $mode, 'slot' => $slot));
+$mform = new organizer_print_slotdetail_form(null, array('id' => $cm->id, 'mode' => $mode, 'slot' => $slot), 'post', '_blank');
 
 if ($data = $mform->get_data()) {
     // Create pdf.
@@ -78,39 +80,13 @@ if ($data = $mform->get_data()) {
         redirect($redirecturl);
     }
 
-    if (!organizer_security_check_slots(array($slot))) {
-        print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
-    }
-
-    set_user_preference('organizer_printperpage', $data->entriesperpage);
-    set_user_preference('organizer_printperpage_optimal', $data->printperpage_optimal);
-    set_user_preference('organizer_textsize', $data->textsize);
-    set_user_preference('organizer_pageorientation', $data->pageorientation);
-    set_user_preference('organizer_headerfooter', $data->headerfooter);
-
-    if ($data->printperpage_optimal == 1) {
-        $ppp = false;
-    } else {
-        $ppp = $data->entriesperpage;
-    }
-
-    $organizer = $DB->get_record('organizer', array('id' => $cm->instance));
-
-    require_capability('mod/organizer:printslots', $context);
-
-    $event = \mod_organizer\event\appointment_list_printed::create(
-        array(
-            'objectid' => $PAGE->cm->id,
-            'context' => $PAGE->context
-        )
-    );
-    $event->trigger();
+    $ppp = organizer_print_setuserprefs_and_triggerevent($data, $cm, $context);
 
     if (!isset($data->cols)) {
         redirect($redirecturl, get_string('nosingleslotprintfields', 'organizer'), null, \core\output\notification::NOTIFY_ERROR);
     } else {
         organizer_display_printable_slotdetail_table($data->cols, $data->slot, $ppp, $data->textsize,
-                $data->pageorientation, $data->headerfooter
+            $data->pageorientation, $data->headerfooter
         );
         redirect($redirecturl);
     }
@@ -127,66 +103,12 @@ if ($data = $mform->get_data()) {
         redirect($redirecturl);
     }
 
-    if (!organizer_security_check_slots(array($slot))) {
-        print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
-    }
+    $organizerconfig = get_config('organizer');
 
     organizer_display_form($mform, get_string('title_print', 'organizer'));
 }
 
 die;
-
-function organizer_organizer_student_action_allowed($action, $slot) {
-    global $DB;
-
-    if (!$DB->record_exists('organizer_slots', array('id' => $slot))) {
-        return false;
-    }
-
-    $slotx = new organizer_slot($slot);
-
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
-
-    $canregister = has_capability('mod/organizer:register', $context, null, false);
-    $canunregister = has_capability('mod/organizer:unregister', $context, null, false);
-    $canreregister = $canregister && $canunregister;
-
-    $myapp = organizer_get_last_user_appointment($organizer);
-    if ($myapp) {
-        $regslot = $DB->get_record('organizer_slots', array('id' => $myapp->slotid));
-        if (isset($regslot)) {
-            $regslotx = new organizer_slot($regslot);
-        }
-    }
-
-    $myslotexists = isset($regslot);
-    $organizerdisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
-    $slotdisabled = $slotx->is_past_due() || $slotx->is_past_deadline();
-    $myslotpending = $myslotexists && $regslotx->is_past_deadline() && !$regslotx->is_evaluated();
-    $ismyslot = $myslotexists && ($slotx->id == $regslot->id);
-    $slotfull = $slotx->is_full();
-
-    $disabled = $myslotpending || $organizerdisabled || $slotdisabled
-        || !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
-
-    if ($myslotexists) {
-        if (!$slotdisabled) {
-            if ($ismyslot) {
-                $disabled |= !$canunregister
-                || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
-            } else {
-                $disabled |= $slotfull || !$canreregister
-                || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
-            }
-        }
-        $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REREGISTER;
-    } else {
-        $disabled |= $slotfull || !$canregister || $ismyslot;
-        $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REGISTER;
-    }
-
-    return !$disabled && ($action == $allowedaction);
-}
 
 function organizer_display_printable_slotdetail_table($columns, $slotid, $entriesperpage = false, $textsize = '10',
         $orientation = 'L', $headerfooter = true) {
@@ -210,42 +132,42 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
 
         switch ($column) {
             case 'lastname':
-                $titles[] = get_string('lastname');
+                $titles[] = organizer_filter_text(get_string('lastname'));
                 $columnwitdh[] = array('value' => 64, 'mode' => 'Relativ');
                 $columnformats[] = array('fill' => 0, 'align' => 'C');
             break;
             case 'firstname':
-                $titles[] = get_string('firstname');
+                $titles[] = organizer_filter_text(get_string('firstname'));
                 $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                 $columnformats[] = array('fill' => 0, 'align' => 'C');
             break;
             case 'email':
-                $titles[] = get_string('email');
+                $titles[] = organizer_filter_text(get_string('email'));
                 $columnwitdh[] = array('value' => 64, 'mode' => 'Relativ');
                 $columnformats[] = array('fill' => 0, 'align' => 'C');
             break;
             case 'idnumber':
-                $titles[] = get_string('idnumber');
+                $titles[] = organizer_filter_text(get_string('idnumber'));
                 $columnwitdh[] = array('value' => 24, 'mode' => 'Relativ');
                 $columnformats[] = array('fill' => 0, 'align' => 'C');
             break;
             case 'attended':
-                $titles[] = get_string('attended', 'organizer');
+                $titles[] = organizer_filter_text(get_string('attended', 'organizer'));
                 $columnwitdh[] = array('value' => 12, 'mode' => 'Relativ');
                 $columnformats[] = array('fill' => 0, 'align' => 'C');
             break;
             case 'grade':
-                $titles[] = get_string('grade');
+                $titles[] = organizer_filter_text(get_string('grade'));
                 $columnwitdh[] = array('value' => 12, 'mode' => 'Relativ');
                 $columnformats[] = array('fill' => 0, 'align' => 'C');
             break;
             case 'feedback':
-                $titles[] = get_string('feedback');
+                $titles[] = organizer_filter_text(get_string('feedback'));
                 $columnwitdh[] = array('value' => 32, 'mode' => 'Relativ');
                 $columnformats[] = array('fill' => 0, 'align' => 'C');
             break;
             case 'signature':
-                $titles[] = get_string('signature', 'organizer');
+                $titles[] = organizer_filter_text(get_string('signature', 'organizer'));
                 $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                 $columnformats[] = array('fill' => 0, 'align' => 'C');
             break;
@@ -254,118 +176,88 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                     $userinfofield = $DB->get_record_select('user_info_field', 'id = :id', array('id' => $column));
                     $userinfofields[$userinfofield->id] = $userinfofield->datatype;
                     $name = $userinfofield->name ? $userinfofield->name : $userinfofield->shortname;
-                    $titles[] = $name;
+                    $titles[] = organizer_filter_text($name);
                     $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
                 } else {  // Field of moodle user table.
                     switch ($column) {
-                        case 'id':
-                            $titles[] = get_string('dbid', 'organizer');
-                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
-                            $columnformats[] = array('fill' => 0, 'align' => 'C');
-                            break;
-                        case 'username':
-                            $titles[] = get_string('username', 'moodle');
-                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
-                            $columnformats[] = array('fill' => 0, 'align' => 'C');
-                            break;
-                        case 'auth':
-                            $titles[] = get_string('auth', 'organizer');
+                        case 'fullnameuser':
+                            $titles[] = organizer_filter_text(get_string('fullnameuser', 'moodle'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'icq':
-                            $titles[] = get_string('icqnumber', 'moodle');
+                            $titles[] = organizer_filter_text(get_string('icqnumber', 'moodle'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'skype':
-                            $titles[] = get_string('skypeid', 'moodle');
+                            $titles[] = organizer_filter_text(get_string('skypeid', 'moodle'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'yahoo':
-                            $titles[] = get_string('yahooid', 'moodle');
+                            $titles[] = organizer_filter_text(get_string('yahooid', 'moodle'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'aim':
-                            $titles[] = get_string('aimid', 'moodle');
+                            $titles[] = organizer_filter_text(get_string('aimid', 'moodle'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'msn':
-                            $titles[] = get_string('msnid', 'moodle');
+                            $titles[] = organizer_filter_text(get_string('msnid', 'moodle'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'phone1':
-                            $titles[] = get_string('phone1', 'moodle');
+                            $titles[] = organizer_filter_text(get_string('phone1', 'moodle'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'phone2':
-                            $titles[] = get_string('phone2', 'moodle');
+                            $titles[] = organizer_filter_text(get_string('phone2', 'moodle'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'institution':
-                            $titles[] = get_string('institution', 'moodle');
+                            $titles[] = organizer_filter_text(get_string('institution', 'moodle'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'department':
-                            $titles[] = get_string('department', 'moodle');
+                            $titles[] = organizer_filter_text(get_string('department', 'moodle'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'address':
-                            $titles[] = get_string('address', 'moodle');
+                            $titles[] = organizer_filter_text(get_string('address', 'moodle'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'city':
-                            $titles[] = get_string('city', 'moodle');
+                            $titles[] = organizer_filter_text(get_string('city', 'moodle'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'country':
-                            $titles[] = get_string('country', 'moodle');
+                            $titles[] = organizer_filter_text(get_string('country', 'moodle'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'lang':
-                            $titles[] = get_string('language', 'moodle');
+                            $titles[] = organizer_filter_text(get_string('language', 'moodle'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'timezone':
-                            $titles[] = get_string('timezone', 'moodle');
+                            $titles[] = organizer_filter_text(get_string('timezone', 'moodle'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'description':
-                            $titles[] = get_string('userdescription', 'moodle');
-                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
-                            $columnformats[] = array('fill' => 0, 'align' => 'C');
-                            break;
-                        case 'lastnamephonetic':
-                            $titles[] = get_string('lastnamephonetic', 'moodle');
-                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
-                            $columnformats[] = array('fill' => 0, 'align' => 'C');
-                            break;
-                        case 'firstnamephonetic':
-                            $titles[] = get_string('firstnamephonetic', 'moodle');
-                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
-                            $columnformats[] = array('fill' => 0, 'align' => 'C');
-                            break;
-                        case 'middlename':
-                            $titles[] = get_string('middlename', 'moodle');
-                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
-                            $columnformats[] = array('fill' => 0, 'align' => 'C');
-                            break;
-                        case 'alternatename':
-                            $titles[] = get_string('alternatename', 'moodle');
+                            $titles[] = organizer_filter_text(get_string('userdescription', 'moodle'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
@@ -406,6 +298,10 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
         foreach ($columns as $column) {
 
             switch ($column) {
+                case 'fullnameuser':
+                    $content = fullusername($entry->id);
+                    $row[] = array('data' => $content);
+                    break;
                 case 'lastname':
                     $content = $entry->lastname;
                     $row[] = array('data' => $content);
@@ -429,7 +325,7 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                     $row[] = array('data' => $content);
                     break;
                 case 'grade':
-                    $grade = isset($entry->grade) ? sprintf("%01.2f", $entry->grade) : '';
+                    $grade = isset($entry->grade) && $entry->grade >= 0 ? sprintf("%01.2f", $entry->grade) : '';
                     $content = $grade;
                     $row[] = array('data' => $content);
                     break;
@@ -464,9 +360,6 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                         }
                     } else {  // Field of moodle user table.
                         switch ($column) {
-                            case 'id':
-                            case 'username':
-                            case 'auth':
                             case 'icq':
                             case 'skype':
                             case 'yahoo':
@@ -482,44 +375,15 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                             case 'lang':
                             case 'timezone':
                             case 'description':
-                            case 'lastnamephonetic':
-                            case 'firstnamephonetic':
-                            case 'middlename':
-                            case 'alternatename':
                                 $content = (isset($entry->{$column}) && $entry->{$column} !== '') ? $entry->{$column} : '';
                                 $row[] = array('data' => $content);
                         }
                     }
-
             }
 
         }
         $mpdftable->addRow($row);
     }
 
-    $format = optional_param('format', 'pdf', PARAM_TEXT);
-
-    switch($format) {
-        case 'xlsx':
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_XLSX);
-        break;
-        case 'xls':
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_XLS);
-        break;
-        case 'ods':
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_ODS);
-        break;
-        case 'csv_comma':
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_CSV_COMMA);
-        break;
-        case 'csv_tab':
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_CSV_TAB);
-        break;
-        default:
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_PDF);
-        break;
-    }
-
-    $mpdftable->generate($filename);
-    die();
+    organizer_format_and_print($mpdftable, $filename);
 }

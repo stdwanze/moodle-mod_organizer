@@ -5,7 +5,7 @@ This file is part of the mod_organizer plugin for Moodle - <http://moodle.org/>
 
 *Author:*    Thomas Niedermaier, Ivan Sakic, Katarzyna Potocka
 
-*Copyright:* 2014 [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
+*Copyright:* 2020 [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
 
 *License:*   [GNU GPL v3 or later](http://www.gnu.org/copyleft/gpl.html)
 
@@ -52,7 +52,7 @@ Students' attendance and grades are to be documented.
 Requirements
 ------------
 
-The plugin is available for Moodle 2.5+. This version is for Moodle 3.6.
+The plugin is available for Moodle 2.5+. This version is for Moodle 3.9.
 
 
 Installation
@@ -83,7 +83,7 @@ Documentation
 -------------
 
 You can find a cheat sheet for the plugin on the [AMC
-website](http://www.academic-moodle-cooperation.org/en/modules/organizer/) and a video tutorial in
+website](https://www.academic-moodle-cooperation.org/en/module/organizer/) and a video tutorial in
 german only in the [AMC YouTube Channel](https://www.youtube.com/c/AMCAcademicMoodleCooperation).
 
 

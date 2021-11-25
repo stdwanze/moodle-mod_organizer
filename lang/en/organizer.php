@@ -175,8 +175,8 @@ $string['err_comments'] = 'You must enter a description!';
 $string['visibility'] = 'Visibility of members - presetting';
 $string['visibility_help'] = 'Definition of the default visibility option with which a new slot will be created.<br/><b>Anonymous:</b> The members of this slot are always invisible to all.<br/><b>Visible:</b> All members of this slot are always visible to all.<br/><b>Only visible to slot members:</b> Only slot members can see each other.';
 $string['remindall_desc'] = 'Send reminders to all students without an appointment';
-$string['infobox_showmyslotsonly'] = 'Show my slots only';
-$string['infobox_showhiddenslots'] = 'Show hidden slots';
+$string['infobox_showmyslotsonly'] = 'My slots';
+$string['infobox_showhiddenslots'] = 'Hidden slots';
 $string['th_datetime'] = 'Date & time';
 $string['th_duration'] = 'Duration';
 $string['th_location'] = 'Location';
@@ -186,6 +186,7 @@ $string['th_participant'] = 'Participant';
 $string['th_email'] = 'Email';
 $string['th_attended'] = 'Att.';
 $string['th_grade'] = 'Grade';
+$string['th_teachercomments'] = 'Teacher comment';
 $string['th_feedback'] = 'Feedback';
 $string['th_details'] = 'Status';
 $string['th_idnumber'] = 'ID number';
@@ -193,7 +194,7 @@ $string['th_firstname'] = 'First name';
 $string['th_lastname'] = 'Last name';
 $string['th_actions'] = 'Action';
 $string['th_status'] = 'Status';
-$string['th_comments'] = 'Comments';
+$string['th_comments'] = 'Participant Comment';
 $string['th_appdetails'] = 'Details';
 $string['th_group'] = 'Group';
 $string['th_datetimedeadline'] = 'Date & time';
@@ -259,7 +260,7 @@ $string['btn_remind'] = 'Send reminder';
 $string['btn_assign'] = 'Assign slot';
 $string['btn_save'] = 'Save comment';
 $string['btn_send'] = 'Send';
-
+$string['btn_sendall'] = 'Send reminders to all students without an appointment';
 $string['downloadfile'] = 'Download file';
 $string['teacherinvisible'] = 'Teacher invisible';
 
@@ -321,7 +322,7 @@ $string['mymoodle_no_reg_slot_group'] = 'Your group {$a->groupname} has not regi
 $string['infobox_title'] = 'Infobox';
 $string['infobox_myslot_title'] = 'My slot';
 $string['infobox_mycomments_title'] = 'My comments';
-$string['infobox_messaging_title'] = 'Messaging options';
+$string['infobox_messaging_title'] = '';
 $string['infobox_deadlines_title'] = 'Deadlines';
 $string['infobox_legend_title'] = 'Legend';
 $string['infobox_organizer_expires'] = 'This organizer will expire on {$a->date} at {$a->time}.';
@@ -338,8 +339,9 @@ $string['infobox_deadline_passed_slot'] = 'xxx slots could not be created becaus
 
 $string['fullname_template'] = '{$a->firstname} {$a->lastname}';
 
-$string['infobox_showfreeslots'] = 'Show free slots only';
-$string['infobox_showslots'] = 'Show past time slots';
+$string['infobox_showfreeslots'] = 'Free slots';
+$string['infobox_showslots'] = 'Past time slots';
+$string['infobox_showregistrationsonly'] = 'Booked slots';
 $string['infobox_showlegend'] = 'Show legend';
 $string['infobox_hidelegend'] = 'Hide legend';
 $string['infobox_slotoverview_title'] = 'Slot overview';
@@ -437,6 +439,7 @@ $string['messageprovider:register_notify_teacher_register'] = 'Organizer registr
 $string['messageprovider:register_notify_teacher_unregister'] = 'Organizer unsubscription notification';
 $string['messageprovider:register_notify_teacher_reregister'] = 'Organizer re-registration notification';
 $string['messageprovider:group_registration_notify_student'] = 'Organizer groupregistration notification';
+$string['messageprovider:register_promotion_student'] = 'Organizer promoted from queue notification';
 $string['messageprovider:register_reminder_student'] = 'Organizer registration reminder';
 $string['messageprovider:edit_notify_student'] = 'Organizer changes';
 $string['messageprovider:edit_notify_teacher'] = 'Organizer changes (Teacher)';
@@ -483,6 +486,8 @@ $string['recipientname'] = '&lt;recipient name&gt;';
 $string['modformwarningsingular'] = 'This field cannot be edited as there are appointments already made in this organizer!';
 $string['modformwarningplural'] = 'These fields cannot be edited as there are appointments already made in this organizer!';
 
+
+$string['with'] = 'with';
 /* Message templates following.
  * Please note that the following strings are available:
  *     sendername, receivername, courseshortname, courselongname, courseid, organizername,
@@ -615,7 +620,7 @@ $string['register_notify_teacher:unqueue:group:smallmessage'] = 'Student {$a->se
 $string['eval_notify_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
 $string['eval_notify_student:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, your appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
+As a part of the course {$a->courseid} {$a->coursefullname}, your appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
 
 Moodle Messaging System';
 
@@ -627,7 +632,7 @@ $string['eval_notify_newappointment:student:subject'] = '[{$a->courseid}{$a->cou
 
 $string['eval_notify_newappointment:student:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, your appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
+As a part of the course {$a->courseid} {$a->coursefullname}, your appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
 
 Teachers of the course enable you to re-register to any available slot in the organizer {$a->organizername}.
 
@@ -640,7 +645,7 @@ $string['eval_notify_newappointment:student:smallmessage'] = 'Your appointment o
 $string['eval_notify_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
 $string['eval_notify_student:group:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, your group appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
+As a part of the course {$a->courseid} {$a->coursefullname}, your group appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
 
 Moodle Messaging System';
 $string['eval_notify_student:group:smallmessage'] = 'Your group appointment on {$a->date} at {$a->time} in {$a->location} has been evaluated.';
@@ -650,7 +655,7 @@ $string['eval_notify_student:group:smallmessage'] = 'Your group appointment on {
 $string['eval_notify_newappointment:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
 $string['eval_notify_newappointment:student:group:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, your group appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
+As a part of the course {$a->courseid} {$a->coursefullname}, your group appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
 
 Teachers of the course enable you to re-register to any available slot in the organizer {$a->coursefullname}.
 
@@ -662,7 +667,7 @@ $string['eval_notify_newappointment:student:group:smallmessage'] = 'Your group a
 $string['edit_notify_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment details changed';
 $string['edit_notify_student:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, the details of the appointment with {$a->sendername} on {$a->date} at {$a->time} have been changed.
+As a part of the course {$a->courseid} {$a->coursefullname}, the details of the appointment {$a->sendername} on {$a->date} at {$a->time} have been changed.
 
 Teacher: {$a->slot_teacher}
 Location: {$a->slot_location}
@@ -671,14 +676,14 @@ Comments:
 {$a->slot_comments}
 
 Moodle Messaging System';
-$string['edit_notify_student:smallmessage'] = 'The details of the appointment with {$a->sendername} on {$a->date} at {$a->time} have been changed.';
+$string['edit_notify_student:smallmessage'] = 'The details of the appointment {$a->sendername} on {$a->date} at {$a->time} have been changed.';
 
 // Edit student group.
 
 $string['edit_notify_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment details changed';
 $string['edit_notify_student:group:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, the details of the group appointment with {$a->sendername} on {$a->date} at {$a->time} have been changed.
+As a part of the course {$a->courseid} {$a->coursefullname}, the details of the group appointment {$a->sendername} on {$a->date} at {$a->time} have been changed.
 
 Teacher: {$a->slot_teacher}
 Location: {$a->slot_location}
@@ -687,7 +692,7 @@ Comments:
 {$a->slot_comments}
 
 Moodle Messaging System';
-$string['edit_notify_student:group:smallmessage'] = 'The details of the group appointment with {$a->sendername} on {$a->date} at {$a->time} have been changed.';
+$string['edit_notify_student:group:smallmessage'] = 'The details of the group appointment {$a->sendername} on {$a->date} at {$a->time} have been changed.';
 
 // Edit teacher.
 
@@ -720,6 +725,11 @@ Comments:
 
 Moodle Messaging System';
 $string['edit_notify_teacher:group:smallmessage'] = 'The details of the time slot on {$a->date} at {$a->time} have been changed by {$a->sendername}.';
+
+// Registered by promotion from queue.
+$string['register_promotion_student:subject'] = 'Moodle Organizer: Promoted from queue';
+$string['register_promotion_student:fullmessage'] = 'Your registration for a timeslot has been promoted from status "waiting list" to status "booked".';
+$string['register_promotion_student:smallmessage'] = 'Your registration for a timeslot has been promoted from status "waiting list" to status "booked".';
 
 // Register reminder student.
 
@@ -932,20 +942,20 @@ $string['appointment_reminder_teacher:group:digest:smallmessage'] = 'You have re
 $string['appointment_reminder_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment reminder';
 $string['appointment_reminder_student:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, you have an appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.
+As a part of the course {$a->courseid} {$a->coursefullname}, you have an appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.
 
 Moodle Messaging System';
-$string['appointment_reminder_student:smallmessage'] = 'You have an appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.';
+$string['appointment_reminder_student:smallmessage'] = 'You have an appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.';
 
 // Appointment reminder student group.
 
 $string['appointment_reminder_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group appointment reminder';
 $string['appointment_reminder_student:group:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, you have a group appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.
+As a part of the course {$a->courseid} {$a->coursefullname}, you have a group appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.
 
 Moodle Messaging System';
-$string['appointment_reminder_student:group:smallmessage'] = 'You have a group appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.';
+$string['appointment_reminder_student:group:smallmessage'] = 'You have a group appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.';
 
 $string['teachercomment_title'] = 'Teacher comments';
 $string['studentcomment_title'] = 'Student comments';
@@ -955,6 +965,7 @@ $string['relative_deadline_now'] = 'Starting now';
 
 $string['nogroup'] = 'No group';
 $string['noparticipants'] = 'No participants';
+$string['novalidparticipants'] = 'No valid participants';
 $string['unavailableslot'] = 'This slot is available from';
 $string['applicant'] = 'This is the person that registered the group';
 
@@ -1067,8 +1078,6 @@ $string['timeshift'] = 'Shifting absolute deadline';
 $string['queue'] = 'Waiting queues';
 $string['queue_help'] = 'Waiting queues allow users to register to a time slot even if the maximum number of participants is already reached.
 		Users are added to a waiting queue and assigned to the slot (in order) as soon as a slot becomes available.';
-$string['queuesubject'] = 'Moodle Organizer: Promoted from queue';
-$string['queuebody'] = 'Your registration for a timeslot has been promoted from status "waiting list" to status "booked".';
 $string['eventqueueadded'] = 'Added to waiting list';
 $string['eventqueueremoved'] = 'Removed from waiting list';
 
@@ -1102,8 +1111,13 @@ $string['totalday_groups'] = 'xxx slots for yyy groups';
 $string['totaltotal'] = 'Total: xxx slots for yyy persons';
 $string['totaltotal_groups'] = 'Total: xxx slots for yyy groups';
 
+$string['enableprintslotuserfields'] = 'Allow change in user profile fields';
+$string['enableprintslotuserfieldsdesc'] = 'Controls whether teachers are allowed to change the default selected user profile fields below';
+$string['printslotuserfieldsnotenabled'] = 'The feature Print Slot user Fields is not enabled by the administrator.';
 $string['singleslotprintfield'] = 'Print slot user field';
-$string['singleslotprintfields'] = 'Print slot user fields';
+$string['defaultsingleslotprintfields'] = 'Default single print slot user profile fields';
+$string['singleslotprintfields_help'] = 'FAKE TEXT - have to be changed with more info on profile fields and how they are controlled by an admin setting';
+$string['singleslotprintfields'] = 'Single print slot user profile fields';
 $string['singleslotprintfield0'] = 'Print slot user field';
 $string['singleslotprintfield0_help'] = 'These user fields are used for each participant when a single slot is printed out.';
 $string['attended'] = 'attended';
@@ -1114,12 +1128,15 @@ $string['created'] = 'Created';
 $string['nosingleslotprintfields'] = 'Printing is not possible. There are no user fields defined. See the organizer settings.';
 $string['dbid'] = 'DB ID';
 $string['auth'] = 'Authentification method';
+$string['allowedprofilefieldsprint'] = 'Allowed user profile fields';
+$string['allowedprofilefieldsprint2'] = 'Allowed user profile fields for printing single organizer slots';
 
 // Privacy strings...
 $string['privacy:metadata:showhiddenslots'] = 'User preference: Shall slot table display hidden slots.';
 $string['privacy:metadata:showmyslotsonly'] = 'User preference: Shall slot table display my slots only.';
 $string['privacy:metadata:showfreeslotsonly'] = 'User preference: Shall slot table display free slots only.';
 $string['privacy:metadata:showpasttimeslots'] = 'User preference: Shall slot table display past slots as well.';
+$string['privacy:metadata:showregistrationsonly'] = 'User preference: Shall slot table display only registrations.';
 $string['privacy:metadata:organizerslotappointments'] = 'Table in which slot appointments are stored.';
 $string['privacy:metadata:organizerslotqueues'] = 'Table in which waiting queue entries for slots are stored.';
 $string['privacy:metadata:organizerslottrainer'] = 'Table in which the trainers of a slot are stored.';
@@ -1164,3 +1181,10 @@ $string['configlocationslist'] = 'Locations for autocomplete field';
 $string['configlocationslist_desc'] = 'Each location has to be inserted in a separate row!';
 $string['locationmandatory'] = 'Slot Location entry is mandatory';
 $string['locationsettings'] = 'Slot location settings';
+
+$string['filtertable'] = '\'Searching this table\'';
+$string['filtertable_help'] = 'Search these slots for mutual strings here.';
+
+// Deprecated
+$string['queuesubject'] = 'Moodle Organizer: Promoted from queue';
+$string['queuebody'] = 'Your registration for a timeslot has been promoted from status "waiting list" to status "booked".';
