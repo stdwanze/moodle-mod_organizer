@@ -2487,7 +2487,7 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
     $ismyslot = $myslotexists && ($slotx->id == $regslot->id);
     $slotfull = $slotx->is_full();
 
-    $disabled = $myslotpending || $organizerdisabled || $slotdisabled ||
+    $disabled = /* $myslotpending ||*/ $organizerdisabled || $slotdisabled ||
         !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
 
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
