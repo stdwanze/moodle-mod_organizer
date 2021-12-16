@@ -151,7 +151,7 @@ class organizer_assign_slot_form extends moodleform
             }
                 // if user is in other slot in same timeframe
                $userapps = organizer_get_all_userappointments_for_time($slot->starttime + ($slot->duration/2), $userid);
-               if(count($userapps) > 0) return false;
+               if(count($userapps) > 0) { return false;}
                return true;
         }
 
