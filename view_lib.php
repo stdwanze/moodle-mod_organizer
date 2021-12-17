@@ -2487,6 +2487,20 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
         }
     }
 
+    $currentApps = organizer_get_all_userappointments_for_time($slotx->starttime+($slotx->duration/2));
+    if(count($currentApps) > 0){
+        $isSameSlot = false;
+        foreach($currentApps as $id){
+            if($slotx->id == $id){
+                $isSameSlot = true;
+            }
+        }
+        if(!$isSameSlot) {
+            $disabled = true
+        }
+    }
+
+
 
     $myslotexists = isset($regslot);
     $organizerdisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
@@ -2528,6 +2542,7 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
         $slotfull,
         $disabled,
         $isalreadyinqueue,
-        $isqueueable
+        $isqueueable,
+
     );
 }
