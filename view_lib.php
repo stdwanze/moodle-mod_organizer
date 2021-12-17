@@ -2516,11 +2516,12 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
         && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
 
     $isSameSlot = 0;
+    $message = '';
     $currentApps = organizer_get_all_userappointments_for_time($slotx->starttime+($slotx->duration/2));
     if(count($currentApps) > 0) {
-      
+
         foreach($currentApps as $id) {
-            $message .= ' - '. $id ;
+            $message = $message .' - '. $id ;
             if($slotx->id == $id){
                 $isSameSlot = 1;
             }
@@ -2531,7 +2532,7 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
     }
 
 
-    $message .= ' count apps ' . count($currentApps) . 'id '. $currentApps[0] .' same slot ' . $isSameSlot;
+    $message = $message . ' count apps ' . count($currentApps) . 'id '. $currentApps[0] .' same slot ' . $isSameSlot;
 
     return array(
         $canregister,
