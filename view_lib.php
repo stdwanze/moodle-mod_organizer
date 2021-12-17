@@ -2526,7 +2526,7 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
                 $isSameSlot = 1;
             }
         }
-        if($isSameSlot == 1) {
+        if($isSameSlot == 0) {
             $disabled = true;
         }
     }
