@@ -2156,7 +2156,7 @@ function organizer_student_action($params, $slot) {
         $commentbtndisabled = $organizerdisabled || !$slotx->organizer_user_has_access();
 
         $commentbtn = $OUTPUT->single_button(
-            $commenturl, get_string("btn_comment", 'organizer', 'post',
+            $commenturl, get_string("btn_comment", 'organizer'), 'post',
             array('disabled' => $commentbtndisabled)
         );
 
