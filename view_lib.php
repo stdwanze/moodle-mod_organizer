@@ -2118,7 +2118,7 @@ function organizer_student_action($params, $slot) {
     list(, , $organizer, $context) = organizer_get_course_module_data();
 
     list($canregister, $canunregister, $canreregister, $myapp, $regslotx, $myslotexists, $organizerdisabled, $slotdisabled,
-            , $ismyslot, $slotfull, $disabled, $isalreadyinqueue, $isqueueable)
+            , $ismyslot, $slotfull, $disabled, $isalreadyinqueue, $isqueueable, $message)
                 = organizer_get_studentrights($slotx, $organizer, $context);
 
     if ($myslotexists && $ismyslot) {
@@ -2156,7 +2156,7 @@ function organizer_student_action($params, $slot) {
         $commentbtndisabled = $organizerdisabled || !$slotx->organizer_user_has_access();
 
         $commentbtn = $OUTPUT->single_button(
-            $commenturl, get_string("btn_comment", 'organizer'), 'post',
+            $commenturl, $message/* get_string("btn_comment", 'organizer'*/, 'post',
             array('disabled' => $commentbtndisabled)
         );
 
@@ -2515,10 +2515,10 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
     $isqueueable = $organizer->queue && !$isalreadyinqueue && !$myslotpending && !$organizerdisabled
         && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
 
-
+    $isSameSlot = false;
     $currentApps = organizer_get_all_userappointments_for_time($slotx->starttime+($slotx->duration/2));
     if(count($currentApps) > 0) {
-        $isSameSlot = false;
+
         foreach($currentApps as $id) {
             if($slotx->id == $id){
                 $isSameSlot = true;
@@ -2528,7 +2528,7 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
             $disabled = true;
         }
     }
-
+    $message = ' count apps ' . count($currentApps) . ' same slot ' . $isSameSlot);
 
     return array(
         $canregister,
@@ -2545,6 +2545,6 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
         $disabled,
         $isalreadyinqueue,
         $isqueueable,
-
+        $message
     );
 }
