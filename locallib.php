@@ -897,9 +897,11 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
                     AND {organizer_slot_appointments}.userid = :userid
                     AND ( {organizer_slot_appointments}.allownewappointments IS NULL OR
                     {organizer_slot_appointments}.allownewappointments = 0 )";
-    if ($alreadyapps = $DB->count_records_sql($query, $params)) {
+   
+    // removed because we want multiple appointments possible
+    /*if ($alreadyapps = $DB->count_records_sql($query, $params)) {
         return false;
-    }
+    }*/
 
     $appointment = new stdClass();
     $appointment->slotid = $slotid;
