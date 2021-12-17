@@ -2516,7 +2516,7 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
         && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
 
     $isSameSlot = 0;
-    $message = '';
+    $message = 't ';
     $currentApps = organizer_get_all_userappointments_for_time($slotx->starttime+($slotx->duration/2));
     if(count($currentApps) > 0) {
 
