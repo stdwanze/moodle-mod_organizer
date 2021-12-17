@@ -288,7 +288,6 @@ function organizer_organizer_student_action_allowed($action, $slot, $organizer, 
     global $DB;
 
     if (!$DB->record_exists('organizer_slots', array('id' => $slot))) {
-        print_error('slot not found');
         return false;
     }
 
@@ -331,6 +330,7 @@ function organizer_organizer_student_action_allowed($action, $slot, $organizer, 
     }
 
     $result = !$disabled && ($action == $allowedaction);
+    print_error(' r '. $result . ' d ' . $disabled . 'req a ' . $action . ' all a' . $allowedaction);
     if (!$result && $isqueueable &&  $action == ORGANIZER_ACTION_QUEUE) {
         $result = true;
     }
