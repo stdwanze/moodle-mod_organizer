@@ -319,7 +319,7 @@ function organizer_organizer_student_action_allowed($action, $slot, $organizer, 
                 $disabled |= !$canunregister
                     || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
             } else {
-                $disabled |= $slotfull || !$canreregister
+                $disabled |= $slotfull || !$canreregister;
                    // || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
             }
         }
