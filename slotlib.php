@@ -79,48 +79,6 @@ function organizer_get_last_user_appointment($organizer, $userid = null, $mergeg
     return $app;
 }
 
-function organizer_get_all_userappointments_for_time($time, $userid){
-
-    //select s.starttime, s.duration, s.id from mdl_organizer_slots as s inner join mdl_organizer_slot_appointments as a on s.id = a.slotid where a.userid = 3;
-    global $DB, $USER;
-
-    $ret = [];
-    if ($userid == null) {
-        $userid = $USER->id;
-    }
-
-    if (!is_number($time) {
-        return [];
-    }
-
-    $paramssql = array('userid' => $userid);
-    $query = "s.starttime, s.duration, s.id from mdl_organizer_slots as s inner join mdl_organizer_slot_appointments as a on s.id = a.slotid where a.userid = :userid";
-    $apps = $DB->get_records_sql($query, $paramssql);
-
-    for($apps as $app){
-
-        if(dateIsInSlotTimeframe($app,$time))
-        {
-            $ret[] = $app->id;
-        }
-    }
-    return ret;
-
-}
-
-public function dateIsInSlotTimeframe($app, $time){
-    $start = $app->starttime;
-    $end = $start+$app->duration;
-    if($start <= $time && $end > $time) {
-        return true;
-    }
-    else {
-        return false;
-    }
-
-}
-
-
 function organizer_get_all_user_appointments($organizer, $userid = null, $mergegroupapps = true) {
     global $DB, $USER;
 
@@ -409,7 +367,6 @@ class organizer_slot
         }
         return $result;
     }
-
 
     /**
      * Waiting list
