@@ -104,7 +104,7 @@ function organizer_get_all_userappointments_for_time($time, $userid = null){
     }
 
     $paramssql = array('userid' => $userid);
-    $query = "s.starttime, s.duration, s.id from mdl_organizer_slots as s inner join mdl_organizer_slot_appointments as a on s.id = a.slotid where a.userid = :userid";
+    $query = "SELECT s.starttime, s.duration, s.id FROM {organizer_slots} AS s INNER JOIN {organizer_slot_appointments} AS a ON s.id = a.slotid WHERE a.userid = :userid";
     $apps = $DB->get_records_sql($query, $paramssql);
 
     foreach($apps as $app){
