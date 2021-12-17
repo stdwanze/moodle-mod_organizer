@@ -2156,14 +2156,14 @@ function organizer_student_action($params, $slot) {
         $commentbtndisabled = $organizerdisabled || !$slotx->organizer_user_has_access();
 
         $commentbtn = $OUTPUT->single_button(
-            $commenturl, $message/* get_string("btn_comment", 'organizer'*/, 'post',
+            $commenturl, get_string("btn_comment", 'organizer'), 'post',
             array('disabled' => $commentbtndisabled)
         );
 
         return organizer_get_reg_button($action, $slotx->id, $params, $disabled) . '<br/>'
                 . $commentbtn;
     } else {
-        return organizer_get_reg_button($action, $slotx->id, $params, $disabled);
+        return organizer_get_reg_button($action, $slotx->id, $params, $disabled) . '<br/> <span>' .$message.'</span>';
     }
 }
 
@@ -2515,20 +2515,24 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
     $isqueueable = $organizer->queue && !$isalreadyinqueue && !$myslotpending && !$organizerdisabled
         && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
 
-    $isSameSlot = false;
+    $isSameSlot = 0;
+    $message = 't ';
     $currentApps = organizer_get_all_userappointments_for_time($slotx->starttime+($slotx->duration/2));
     if(count($currentApps) > 0) {
 
         foreach($currentApps as $id) {
+            $message = $message .' - '. $id ;
             if($slotx->id == $id){
-                $isSameSlot = true;
+                $isSameSlot = 1;
             }
         }
-        if(!$isSameSlot) {
+        if($isSameSlot == 0) {
             $disabled = true;
         }
     }
-    $message = ' count apps ' . count($currentApps) . ' same slot ' . $isSameSlot;
+
+
+    $message = $message . ' count apps ' . count($currentApps) . 'id '. $currentApps[0] .' same slot ' . $isSameSlot;
 
     return array(
         $canregister,

@@ -114,7 +114,7 @@ function organizer_get_all_userappointments_for_time($time, $userid = null){
             $ret[] = $app->id;
         }
     }
-    return ret;
+    return $ret;
 
 }
 
