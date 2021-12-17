@@ -2186,7 +2186,7 @@ function organizer_get_reg_button($type, $slotid, $params, $disabled = false) {
     );
 
     return $OUTPUT->single_button(
-        $actionurl, get_string("btn_$type", 'organizer'), 'post', array('disabled' => $disabled)
+        $actionurl, get_string("btn_$type", 'organizer') . ' - '. $slotid, 'post', array('disabled' => $disabled)
     );
 }
 
