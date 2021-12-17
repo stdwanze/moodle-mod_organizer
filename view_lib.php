@@ -2528,7 +2528,7 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
             $disabled = true;
         }
     }
-    $message = ' count apps ' . count($currentApps) . ' same slot ' . $isSameSlot);
+    $message = ' count apps ' . count($currentApps) . ' same slot ' . $isSameSlot;
 
     return array(
         $canregister,
