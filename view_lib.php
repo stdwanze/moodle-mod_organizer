@@ -2486,18 +2486,7 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
             $ismyslot = true;
         }
     }
-    $currentApps = organizer_get_all_userappointments_for_time($slotx->starttime+($slotx->duration/2));
-    if(count($currentApps) > 0) {
-        $isSameSlot = false;
-        foreach($currentApps as $id) {
-            if($slotx->id == $id){
-                $isSameSlot = true;
-            }
-        }
-        if(!$isSameSlot) {
-            $disabled = true;
-        }
-    }
+
 
 
 
@@ -2525,6 +2514,20 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
 
     $isqueueable = $organizer->queue && !$isalreadyinqueue && !$myslotpending && !$organizerdisabled
         && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
+
+
+    $currentApps = organizer_get_all_userappointments_for_time($slotx->starttime+($slotx->duration/2));
+    if(count($currentApps) > 0) {
+        $isSameSlot = false;
+        foreach($currentApps as $id) {
+            if($slotx->id == $id){
+                $isSameSlot = true;
+            }
+        }
+        if(!$isSameSlot) {
+            $disabled = true;
+        }
+    }
 
 
     return array(
