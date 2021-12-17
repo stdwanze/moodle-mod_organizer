@@ -126,7 +126,7 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
     require_capability('mod/organizer:register', $context);
 
     if (!organizer_organizer_student_action_allowed($action, $slot, $organizer, $context)) {
-        print_error('Inconsistent state: Cannot execute registration action! Please navigate back and refresh your browser! '+$slot + ' ' + $action);
+        print_error('Inconsistent state: Cannot execute registration action! Please navigate back and refresh your browser!');
     }
 
     $group = organizer_fetch_my_group();
