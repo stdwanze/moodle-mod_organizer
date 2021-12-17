@@ -2481,22 +2481,22 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
     }
 
     $allapps = organizer_get_all_user_appointments($organizer);
-    foreach ($allapps as $slapp){
+    foreach ($allapps as $slapp) {
         if($slapp->slotid == $slotx->id ){
             $ismyslot = true;
         }
     }
 
     $currentApps = organizer_get_all_userappointments_for_time($slotx->starttime+($slotx->duration/2));
-    if(count($currentApps) > 0){
+    if(count($currentApps) > 0) {
         $isSameSlot = false;
-        foreach($currentApps as $id){
+        foreach($currentApps as $id) {
             if($slotx->id == $id){
                 $isSameSlot = true;
             }
         }
         if(!$isSameSlot) {
-            $disabled = true
+            $disabled = true;
         }
     }
 
