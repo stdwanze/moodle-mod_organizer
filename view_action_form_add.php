@@ -117,12 +117,14 @@ class organizer_add_slots_form extends moodleform
 
         $mform->addElement(
             'duration', 'duration', get_string('duration', 'organizer'),
-            array('optional' => false, 'defaultunit' => 60)
+            array('optional' => false, 'defaultunit' => 86400)
         );
         $mform->setType('duration', PARAM_INT);
-        $mform->setDefault('duration', 900);
+        $mform->setDefault('duration', 5);
         $duration = $mform->getElement('duration')->getElements();
         $duration[1]->removeOption(1);
+        $duration[1]->removeOption(60);
+        $duration[1]->removeOption(3600);
         $duration[1]->removeOption(604800);
         $mform->addHelpButton('duration', 'duration', 'organizer');
 
@@ -139,7 +141,7 @@ class organizer_add_slots_form extends moodleform
 
         $mform->addElement('text', 'maxparticipants', get_string('maxparticipants', 'organizer'), array('size' => '3'));
         $mform->setType('maxparticipants', PARAM_INT);
-        $mform->setDefault('maxparticipants', 1);
+        $mform->setDefault('maxparticipants', 16);
         $mform->addHelpButton('maxparticipants', 'maxparticipants', 'organizer');
 
         if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
