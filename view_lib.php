@@ -2486,7 +2486,7 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
             $ismyslot = true;
         }
     }
-
+    print_error('time '. ($slotx->starttime+($slotx->duration/2));
     $currentApps = organizer_get_all_userappointments_for_time($slotx->starttime+($slotx->duration/2));
     if(count($currentApps) > 0) {
         $isSameSlot = false;
