@@ -2480,11 +2480,19 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
         }
     }
 
+    $allapps = organizer_get_all_user_appointments($organizer );
+    for($allapps as $slapp){
+        if($slapp->slotid == $slotx->id ){
+            $ismyslot = true;
+        }
+    }
+
+
     $myslotexists = isset($regslot);
     $organizerdisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
     $slotdisabled = $slotx->is_past_due() || $slotx->is_past_deadline();
     $myslotpending = $myslotexists && $regslotx->is_past_deadline() && !$regslotx->is_evaluated();
-    $ismyslot = $myslotexists && ($slotx->id == $regslot->id);
+    //$ismyslot = $myslotexists && ($slotx->id == $regslot->id);
     $slotfull = $slotx->is_full();
 
 /*    $disabled = $myslotpending || $organizerdisabled || $slotdisabled ||
