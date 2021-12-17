@@ -2121,7 +2121,7 @@ function organizer_student_action($params, $slot) {
             , $ismyslot, $slotfull, $disabled, $isalreadyinqueue, $isqueueable)
                 = organizer_get_studentrights($slotx, $organizer, $context);
 
-    if ($myslotexists) {
+    if ($myslotexists && $ismyslot) {
         if (!$slotdisabled) {
             if ($ismyslot) {
                 $disabled |= !$canunregister
@@ -2505,7 +2505,7 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
     $isqueueable = $organizer->queue && !$isalreadyinqueue && !$myslotpending && !$organizerdisabled
         && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
 
-    $myslotexists = false;
+
     return array(
         $canregister,
         $canunregister,
