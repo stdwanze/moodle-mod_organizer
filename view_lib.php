@@ -2480,8 +2480,8 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
         }
     }
 
-    $allapps = organizer_get_all_user_appointments($organizer );
-    for($allapps as $slapp){
+    $allapps = organizer_get_all_user_appointments($organizer);
+    foreach ($allapps as $slapp){
         if($slapp->slotid == $slotx->id ){
             $ismyslot = true;
         }
