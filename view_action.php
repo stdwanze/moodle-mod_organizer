@@ -330,7 +330,7 @@ function organizer_organizer_student_action_allowed($action, $slot, $organizer, 
     }
 
     $result = !$disabled && ($action == $allowedaction);
-  //  print_error(' r '. $result . ' d ' . $disabled . 'req a ' . $action . ' all a' . $allowedaction);
+    print_error(' r '. $result . ' d ' . $disabled . 'req a ' . $action . ' all a' . $allowedaction);
     if (!$result && $isqueueable &&  $action == ORGANIZER_ACTION_QUEUE) {
         $result = true;
     }
