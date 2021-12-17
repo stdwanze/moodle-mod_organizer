@@ -78,7 +78,7 @@ function organizer_get_last_user_appointment($organizer, $userid = null, $mergeg
 
     return $app;
 }
- function dateIsInSlotTimeframe($app, $time){
+function dateIsInSlotTimeframe($app, $time){
     $start = $app->starttime;
     $end = $start+$app->duration;
     if($start <= $time && $end > $time) {
@@ -99,7 +99,7 @@ function organizer_get_all_userappointments_for_time($time, $userid = null){
         $userid = $USER->id;
     }
 
-    if (!is_number($time) {
+    if (!is_number($time)) {
         return [];
     }
 
