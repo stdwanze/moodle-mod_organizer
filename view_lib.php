@@ -2487,8 +2487,8 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
     $ismyslot = $myslotexists && ($slotx->id == $regslot->id);
     $slotfull = $slotx->is_full();
 
-    $disabled =  $organizerdisabled || $slotdisabled ||
-        !$slotx->organizer_user_has_access() || $slotx->is_evaluated(); /* $myslotpending ||*/
+    $disabled = $myslotpending || $organizerdisabled || $slotdisabled ||
+        !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
 
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $isalreadyinqueue = $slotx->is_group_in_queue();
@@ -2499,8 +2499,6 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
     $isqueueable = $organizer->queue && !$isalreadyinqueue && !$myslotpending && !$organizerdisabled
         && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
 
-            // hotfix/hack for multiple registrations
-    $myslotexists = false;
     return array(
         $canregister,
         $canunregister,
